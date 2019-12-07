@@ -211,7 +211,7 @@ export default {
         })
         .catch(err => {
           this.errorSnackbar = true
-          console.error(err.response.data.message)
+          console.error(err)
         })
         .then(() => {
           this.isSending = false
