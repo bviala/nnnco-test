@@ -69,7 +69,6 @@
       <v-textarea
         v-model="message"
         label="Message*"
-        height="100"
         auto-grow/>
     </v-row>
     <v-row>
