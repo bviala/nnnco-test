@@ -104,7 +104,7 @@
 <script>
 import { sendEmail } from '../api/email'
 
-const emailRegex = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/
+const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
 export default {
   data () {
@@ -127,19 +127,51 @@ export default {
 
   computed: {
     recipientsErrorMessage () {
-      return this.getRecipientListErrorMessage(this.recipients)
+      if (!this.isRecipientListValid(this.recipients)) {
+        return 'Invalid e-mail address'
+      } else {
+        return ''
+      }
     },
 
     carbonCopyRecipientsErrorMessage () {
-      return this.getRecipientListErrorMessage(this.carbonCopyRecipients)
+      if (!this.isRecipientListValid(this.carbonCopyRecipients)) {
+        return 'Invalid e-mail address'
+      }
+      let alreadyUsed = false
+      this.carbonCopyRecipients.forEach(email => {
+        if (this.recipients.indexOf(email) !== -1) {
+          alreadyUsed = true
+        }
+      })
+      if (alreadyUsed) {
+        return 'Duplicate e-mail address'
+      }
+      return ''
     },
 
     blindCarbonCopyRecipientsErrorMessage () {
-      return this.getRecipientListErrorMessage(this.blindCarbonCopyRecipients)
+      if (!this.isRecipientListValid(this.blindCarbonCopyRecipients)) {
+        return 'Invalid e-mail address'
+      }
+      let alreadyUsed = false
+      this.blindCarbonCopyRecipients.forEach(email => {
+        if (this.recipients.indexOf(email) !== -1) {
+          alreadyUsed = true
+        }
+        if (this.carbonCopyRecipients.indexOf(email) !== -1) {
+          alreadyUsed = true
+        }
+      })
+      if (alreadyUsed) {
+        return 'Duplicate e-mail address'
+      }
+      return ''
     },
 
     emailCanBeSent () {
-      return this.recipients.length > 0 && this.recipientsErrorMessage === '' &&
+      return this.recipients.length > 0 &&
+      this.recipientsErrorMessage === '' &&
       this.carbonCopyRecipientsErrorMessage === '' &&
       this.blindCarbonCopyRecipientsErrorMessage === '' &&
       this.message.length > 0
@@ -177,7 +209,7 @@ export default {
         })
         .catch(err => {
           this.errorSnackbar = true
-          console.error(err)
+          console.error(err.response.data.message)
         })
         .then(() => {
           this.isSending = false
@@ -192,19 +224,14 @@ export default {
       this.message = ''
     },
 
-    // given an array of email addresses, returns an error message if one of them is invalid
-    getRecipientListErrorMessage (list) {
-      let invalidEmail = false
+    isRecipientListValid (list) {
+      let validEmail = true
       list.forEach(email => {
-        if (!emailRegex.test(email)) {
-          invalidEmail = true
+        if (!emailRegex.test(email, 'i')) {
+          validEmail = false
         }
       })
-      if (invalidEmail) {
-        return 'Invalid e-mail address'
-      } else {
-        return ''
-      }
+      return validEmail
     }
   }
 }
