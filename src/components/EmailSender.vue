@@ -7,6 +7,7 @@
     </v-row>
     <v-row>
       <v-combobox
+        v-model="recipients"
         label="To"
         chips
         deletable-chips
@@ -60,15 +61,18 @@
     </v-row>
     <v-row>
       <v-textarea
+        v-model="message"
         label="Message"
         height="100"
         auto-grow/>
     </v-row>
     <v-row>
       <v-btn
+        :disabled="!canBeSent"
         block
         color="primary"
-        depressed>
+        depressed
+        @click="send">
         Send
       </v-btn>
     </v-row>
@@ -77,15 +81,25 @@
 </template>
 
 <script>
+import { sendEmail } from '../api/email'
+
 export default {
   data () {
     return {
       carbonCopy: false,
       blindCarbonCopy: false,
 
-      recipents: [],
+      message: '',
+
+      recipients: [],
       carbonCopyRecipients: [],
       blindCarbonCopyRecipients: []
+    }
+  },
+
+  computed: {
+    canBeSent () {
+      return this.recipients.length > 0 && this.message.length > 0
     }
   },
 
@@ -95,6 +109,16 @@ export default {
     },
     enableBlindCarbonCopy () {
       this.blindCarbonCopy = true
+    },
+    send () {
+      sendEmail({
+        toList: this.recipients,
+        ccList: this.carbonCopyRecipients,
+        bccList: this.blindCarbonCopyRecipients,
+        text: this.message
+      })
+        .then(res => console.log(res.status))
+        .catch(err => console.error(err))
     }
   }
 }
