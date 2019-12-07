@@ -56,6 +56,7 @@
     </v-row>
     <v-row>
       <v-text-field
+        v-model="subject"
         label="Subject"
       />
     </v-row>
@@ -77,6 +78,13 @@
       </v-btn>
     </v-row>
 
+    <v-snackbar
+      v-model="successSnackbar"
+      color="success"
+      bottom>
+      E-mail successfully sent !
+    </v-snackbar>
+
   </v-container>
 </template>
 
@@ -88,12 +96,13 @@ export default {
     return {
       carbonCopy: false,
       blindCarbonCopy: false,
-
-      message: '',
+      successSnackbar: false,
 
       recipients: [],
       carbonCopyRecipients: [],
-      blindCarbonCopyRecipients: []
+      blindCarbonCopyRecipients: [],
+      subject: '',
+      message: ''
     }
   },
 
@@ -111,14 +120,31 @@ export default {
       this.blindCarbonCopy = true
     },
     send () {
-      sendEmail({
+      const emailObject = {
         toList: this.recipients,
         ccList: this.carbonCopyRecipients,
         bccList: this.blindCarbonCopyRecipients,
         text: this.message
-      })
-        .then(res => console.log(res.status))
+      }
+
+      // API allows email without subject only if the parameter is not sent
+      if (this.subject) {
+        emailObject.subject = this.subject
+      }
+
+      sendEmail(emailObject)
+        .then(res => {
+          this.successSnackbar = true
+          this.resetForm()
+        })
         .catch(err => console.error(err))
+    },
+    resetForm () {
+      this.recipients = []
+      this.carbonCopyRecipients = []
+      this.blindCarbonCopyRecipients = []
+      this.subject = ''
+      this.message = ''
     }
   }
 }
