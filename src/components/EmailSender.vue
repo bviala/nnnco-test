@@ -69,7 +69,8 @@
     </v-row>
     <v-row>
       <v-btn
-        :disabled="!canBeSent"
+        :disabled="!canBeSent || isSending"
+        :loading="isSending"
         block
         color="primary"
         depressed
@@ -97,6 +98,7 @@ export default {
       carbonCopy: false,
       blindCarbonCopy: false,
       successSnackbar: false,
+      isSending: false,
 
       recipients: [],
       carbonCopyRecipients: [],
@@ -120,6 +122,8 @@ export default {
       this.blindCarbonCopy = true
     },
     send () {
+      this.isSending = true
+
       const emailObject = {
         toList: this.recipients,
         ccList: this.carbonCopyRecipients,
@@ -138,6 +142,9 @@ export default {
           this.resetForm()
         })
         .catch(err => console.error(err))
+        .then(() => {
+          this.isSending = false
+        })
     },
     resetForm () {
       this.recipients = []
