@@ -86,6 +86,13 @@
       E-mail successfully sent !
     </v-snackbar>
 
+    <v-snackbar
+      v-model="errorSnackbar"
+      color="error"
+      bottom>
+      An error occurred, please try again
+    </v-snackbar>
+
   </v-container>
 </template>
 
@@ -95,11 +102,14 @@ import { sendEmail } from '../api/email'
 export default {
   data () {
     return {
+      // UI
       carbonCopy: false,
       blindCarbonCopy: false,
       successSnackbar: false,
+      errorSnackbar: false,
       isSending: false,
 
+      // Data
       recipients: [],
       carbonCopyRecipients: [],
       blindCarbonCopyRecipients: [],
@@ -141,7 +151,10 @@ export default {
           this.successSnackbar = true
           this.resetForm()
         })
-        .catch(err => console.error(err))
+        .catch(err => {
+          this.errorSnackbar = true
+          console.error(err)
+        })
         .then(() => {
           this.isSending = false
         })
