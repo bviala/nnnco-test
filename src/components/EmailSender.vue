@@ -8,7 +8,7 @@
     <v-row>
       <v-combobox
         v-model="recipients"
-        label="To"
+        label="To*"
         chips
         deletable-chips
         multiple
@@ -63,7 +63,7 @@
     <v-row>
       <v-textarea
         v-model="message"
-        label="Message"
+        label="Message*"
         height="100"
         auto-grow/>
     </v-row>
