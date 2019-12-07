@@ -8,6 +8,7 @@
     <v-row>
       <v-combobox
         v-model="recipients"
+        :error-messages='recipientsErrorMessage'
         label="To*"
         chips
         deletable-chips
@@ -39,6 +40,8 @@
     <v-row
       v-if="carbonCopy">
       <v-combobox
+        v-model="carbonCopyRecipients"
+        :error-messages="carbonCopyRecipientsErrorMessage"
         label="Carbon Copy"
         chips
         deletable-chips
@@ -48,6 +51,8 @@
     <v-row
       v-if="blindCarbonCopy">
       <v-combobox
+        v-model="blindCarbonCopyRecipients"
+        :error-messages="blindCarbonCopyRecipientsErrorMessage"
         label="Blind Carbon Copy"
         chips
         deletable-chips
@@ -69,7 +74,7 @@
     </v-row>
     <v-row>
       <v-btn
-        :disabled="!canBeSent || isSending"
+        :disabled="!emailCanBeSent || isSending"
         :loading="isSending"
         block
         color="primary"
@@ -90,7 +95,7 @@
       v-model="errorSnackbar"
       color="error"
       bottom>
-      An error occurred, please try again
+      An error occurred, please try again.
     </v-snackbar>
 
   </v-container>
@@ -98,6 +103,8 @@
 
 <script>
 import { sendEmail } from '../api/email'
+
+const emailRegex = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/
 
 export default {
   data () {
@@ -119,8 +126,23 @@ export default {
   },
 
   computed: {
-    canBeSent () {
-      return this.recipients.length > 0 && this.message.length > 0
+    recipientsErrorMessage () {
+      return this.getRecipientListErrorMessage(this.recipients)
+    },
+
+    carbonCopyRecipientsErrorMessage () {
+      return this.getRecipientListErrorMessage(this.carbonCopyRecipients)
+    },
+
+    blindCarbonCopyRecipientsErrorMessage () {
+      return this.getRecipientListErrorMessage(this.blindCarbonCopyRecipients)
+    },
+
+    emailCanBeSent () {
+      return this.recipients.length > 0 && this.recipientsErrorMessage === '' &&
+      this.carbonCopyRecipientsErrorMessage === '' &&
+      this.blindCarbonCopyRecipientsErrorMessage === '' &&
+      this.message.length > 0
     }
   },
 
@@ -128,9 +150,11 @@ export default {
     enableCarbonCopy () {
       this.carbonCopy = true
     },
+
     enableBlindCarbonCopy () {
       this.blindCarbonCopy = true
     },
+
     send () {
       this.isSending = true
 
@@ -159,12 +183,28 @@ export default {
           this.isSending = false
         })
     },
+
     resetForm () {
       this.recipients = []
       this.carbonCopyRecipients = []
       this.blindCarbonCopyRecipients = []
       this.subject = ''
       this.message = ''
+    },
+
+    // given an array of email addresses, returns an error message if one of them is invalid
+    getRecipientListErrorMessage (list) {
+      let invalidEmail = false
+      list.forEach(email => {
+        if (!emailRegex.test(email)) {
+          invalidEmail = true
+        }
+      })
+      if (invalidEmail) {
+        return 'Invalid e-mail address'
+      } else {
+        return ''
+      }
     }
   }
 }
