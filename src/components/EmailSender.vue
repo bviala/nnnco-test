@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class="px-5">
     <v-row>
         <h1 class="primary--text font-weight-light">
           bviala email sender
