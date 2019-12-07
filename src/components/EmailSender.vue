@@ -1,5 +1,5 @@
 <template>
-  <v-container class="px-5">
+  <v-container class="px-5 container">
     <v-row>
         <h1 class="primary--text font-weight-light">
           bviala email sender
@@ -241,5 +241,8 @@ export default {
   h1 {
     margin-top: 1.5em;
     margin-bottom: 1.5em;
+  }
+  .container {
+    max-width: 700px;
   }
 </style>
