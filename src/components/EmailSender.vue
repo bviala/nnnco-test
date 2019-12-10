@@ -9,6 +9,7 @@
       @submit.prevent="send">
       <v-row>
         <v-combobox
+          ref="recipients"
           v-model="recipients"
           :error-messages='recipientsErrorMessage'
           label="To*"
@@ -24,7 +25,7 @@
               rounded
               depressed
               color="primary"
-              @click="enableCarbonCopy">
+              @click.stop="enableCarbonCopy">
               CC
             </v-btn>
             <v-btn
@@ -33,7 +34,7 @@
               rounded
               depressed
               color="primary"
-              @click="enableBlindCarbonCopy">
+              @click.stop="enableBlindCarbonCopy">
               BCC
             </v-btn>
           </template>
@@ -42,6 +43,7 @@
       <v-row
         v-if="carbonCopy">
         <v-combobox
+          ref="carbonCopy"
           v-model="carbonCopyRecipients"
           :error-messages="carbonCopyRecipientsErrorMessage"
           label="Carbon Copy"
@@ -53,6 +55,7 @@
       <v-row
         v-if="blindCarbonCopy">
         <v-combobox
+          ref="blindCarbonCopy"
           v-model="blindCarbonCopyRecipients"
           :error-messages="blindCarbonCopyRecipientsErrorMessage"
           label="Blind Carbon Copy"
@@ -183,10 +186,18 @@ export default {
   methods: {
     enableCarbonCopy () {
       this.carbonCopy = true
+      this.$nextTick(() => {
+        this.$refs.recipients.blur()
+        this.$refs.carbonCopy.focus()
+      })
     },
 
     enableBlindCarbonCopy () {
       this.blindCarbonCopy = true
+      this.$nextTick(() => {
+        this.$refs.recipients.blur()
+        this.$refs.blindCarbonCopy.focus()
+      })
     },
 
     send () {
