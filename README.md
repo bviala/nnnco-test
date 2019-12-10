@@ -9,10 +9,10 @@ http://bvialaemailsender.surge.sh/
 ## Project setup
 
 ### Environment variables
-Set the following variables  and  in a `.env` file at the root of the project: 
+The following variables are set in the `.env` file at the root of the project: 
 
 * `VUE_APP_EMAIL_ISSUER` : The email address the emails should be sent from.  
-* `VUE_APP_EMAIL_API_URL` : The URL of the email API the application should use.
+* `VUE_APP_API_BASE_URL` : The base URL of the API the application should use.
 
 ### Install dependencies
 
