@@ -107,6 +107,7 @@
 </template>
 
 <script>
+import { intersection } from 'lodash'
 import { sendEmail } from '../api/email'
 
 const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
@@ -142,36 +143,24 @@ export default {
     carbonCopyRecipientsErrorMessage () {
       if (!this.isRecipientListValid(this.carbonCopyRecipients)) {
         return 'Invalid e-mail address'
-      }
-      let alreadyUsed = false
-      this.carbonCopyRecipients.forEach(email => {
-        if (this.recipients.indexOf(email) !== -1) {
-          alreadyUsed = true
-        }
-      })
-      if (alreadyUsed) {
+      } else if (intersection(this.recipients, this.carbonCopyRecipients).length !== 0) {
         return 'Duplicate e-mail address'
+      } else {
+        return ''
       }
-      return ''
     },
 
     blindCarbonCopyRecipientsErrorMessage () {
       if (!this.isRecipientListValid(this.blindCarbonCopyRecipients)) {
         return 'Invalid e-mail address'
-      }
-      let alreadyUsed = false
-      this.blindCarbonCopyRecipients.forEach(email => {
-        if (this.recipients.indexOf(email) !== -1) {
-          alreadyUsed = true
-        }
-        if (this.carbonCopyRecipients.indexOf(email) !== -1) {
-          alreadyUsed = true
-        }
-      })
-      if (alreadyUsed) {
+      } else if (
+        intersection(this.recipients, this.blindCarbonCopyRecipients).length !== 0 ||
+        intersection(this.carbonCopyRecipients, this.blindCarbonCopyRecipients).length !== 0
+      ) {
         return 'Duplicate e-mail address'
+      } else {
+        return ''
       }
-      return ''
     },
 
     emailCanBeSent () {
