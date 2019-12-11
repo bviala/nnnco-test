@@ -246,7 +246,11 @@ export default {
           this.errorSnackbarMessage = defaultErrorMessage
         }
 
-        this.errorSnackbar = true
+        // Reset timeout of the snackbar, preventing it from disappearing to soon on consecutive errors
+        this.errorSnackbar = false
+        this.$nextTick(() => {
+          this.errorSnackbar = true
+        })
 
         // Prevents user from spamming requests and triggering server overquota errors
         setTimeout(() => {
