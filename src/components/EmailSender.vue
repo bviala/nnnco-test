@@ -102,11 +102,10 @@
 
     <v-snackbar
       v-model="errorSnackbar"
-      :timeout="errorTimeout"
       color="error"
       bottom
     >
-      An error occurred, please try again.
+      {{ errorSnackbarMessage }}
     </v-snackbar>
   </v-container>
 </template>
@@ -117,8 +116,10 @@ import { sendEmail } from '../api/email'
 
 const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 const emailWithDisplayNameRegex = /^[^-><éàç€£@'"§,;:()[\]]+\s+<(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))>$/
+const defaultErrorMessage = 'An unknown error occurred. Please reach the support team if this error persists.'
 
 export default {
+
   data () {
     return {
       // UI
@@ -127,7 +128,7 @@ export default {
       successSnackbar: false,
       errorSnackbar: false,
       isSending: false,
-      errorTimeout: 2000,
+      errorSnackbarMessage: '',
 
       // Data
       recipients: [],
@@ -219,12 +220,38 @@ export default {
         this.resetForm()
         this.isSending = false
       } catch (err) {
+        if (err.response && err.response.status) {
+          switch (err.response.status) {
+            case 400:
+              this.errorSnackbarMessage = 'There was an error in your request. Please verify that the recipients email addresses are all correct.'
+              break
+            case 503:
+              this.errorSnackbarMessage = 'The service was unavailable. Please try again later.'
+              break
+            case 500:
+              this.errorSnackbarMessage = 'An error occurred on our server. Please reach the support team if this error persists.'
+              break
+            case 429:
+              this.errorSnackbarMessage = 'You sent too many requests. Please wait a few seconds before making another attempt.'
+              break
+            default:
+              console.error(err)
+              this.errorSnackbarMessage = defaultErrorMessage
+              break
+          }
+        } else if (err.message === 'Network Error') {
+          this.errorSnackbarMessage = 'Network Error. Please check your internet connection.'
+        } else {
+          console.error(err)
+          this.errorSnackbarMessage = defaultErrorMessage
+        }
+
         this.errorSnackbar = true
-        console.error(err)
+
         // Prevents user from spamming requests and triggering server overquota errors
         setTimeout(() => {
           this.isSending = false
-        }, this.errorTimeout)
+        }, 2000)
       }
     },
 
