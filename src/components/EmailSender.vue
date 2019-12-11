@@ -200,7 +200,7 @@ export default {
       })
     },
 
-    send () {
+    async send () {
       this.isSending = true
 
       const emailObject = {
@@ -215,18 +215,19 @@ export default {
         emailObject.subject = this.subject
       }
 
-      sendEmail(emailObject)
-        .then(res => {
-          this.successSnackbar = true
-          this.resetForm()
-        })
-        .catch(err => {
-          this.errorSnackbar = true
-          console.error(err)
-        })
-        .then(() => {
+      try {
+        await sendEmail(emailObject)
+        this.successSnackbar = true
+        this.resetForm()
+        this.isSending = false
+      } catch (err) {
+        this.errorSnackbar = true
+        console.error(err)
+        // Prevents user from spamming requests and triggering server overquota errors
+        setTimeout(() => {
           this.isSending = false
-        })
+        }, 2000)
+      }
     },
 
     resetForm () {
