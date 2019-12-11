@@ -116,6 +116,7 @@ import { intersection } from 'lodash'
 import { sendEmail } from '../api/email'
 
 const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+const emailWithDisplayNameRegex = /^[^-><éàç€£@'"§,;:()[\]]+\s+<(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))>$/
 
 export default {
   data () {
@@ -238,7 +239,7 @@ export default {
     isRecipientListValid (list) {
       let validEmail = true
       list.forEach(email => {
-        if (!emailRegex.test(email, 'i')) {
+        if (!emailRegex.test(email, 'i') && !emailWithDisplayNameRegex.test(email, 'i')) {
           validEmail = false
         }
       })
