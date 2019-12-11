@@ -116,10 +116,12 @@ import { sendEmail } from '../api/email'
 
 const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 const emailWithDisplayNameRegex = /^[^-><éàç€£@'"§,;:()[\]]+\s+<(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))>$/
-const defaultErrorMessage = 'An unknown error occurred. Please reach the support team if this error persists.'
+
+const defaultErrorSnackbarMessage = 'An unknown error occurred. Please reach the support team if this error persists.'
+const duplicateEmailErrorMessage = 'Duplicate email address'
+const invalidEmailErrorMessage = 'Invalid email address'
 
 export default {
-
   data () {
     return {
       // UI
@@ -142,7 +144,7 @@ export default {
   computed: {
     recipientsErrorMessage () {
       if (!this.isRecipientListValid(this.recipients)) {
-        return 'Invalid e-mail address'
+        return invalidEmailErrorMessage
       } else {
         return ''
       }
@@ -150,9 +152,9 @@ export default {
 
     carbonCopyRecipientsErrorMessage () {
       if (!this.isRecipientListValid(this.carbonCopyRecipients)) {
-        return 'Invalid e-mail address'
+        return invalidEmailErrorMessage
       } else if (intersection(this.recipients, this.carbonCopyRecipients).length !== 0) {
-        return 'Duplicate e-mail address'
+        return duplicateEmailErrorMessage
       } else {
         return ''
       }
@@ -160,12 +162,12 @@ export default {
 
     blindCarbonCopyRecipientsErrorMessage () {
       if (!this.isRecipientListValid(this.blindCarbonCopyRecipients)) {
-        return 'Invalid e-mail address'
+        return invalidEmailErrorMessage
       } else if (
         intersection(this.recipients, this.blindCarbonCopyRecipients).length !== 0 ||
         intersection(this.carbonCopyRecipients, this.blindCarbonCopyRecipients).length !== 0
       ) {
-        return 'Duplicate e-mail address'
+        return duplicateEmailErrorMessage
       } else {
         return ''
       }
@@ -236,14 +238,14 @@ export default {
               break
             default:
               console.error(err)
-              this.errorSnackbarMessage = defaultErrorMessage
+              this.errorSnackbarMessage = defaultErrorSnackbarMessage
               break
           }
         } else if (err.message === 'Network Error') {
           this.errorSnackbarMessage = 'Network Error. Please check your internet connection.'
         } else {
           console.error(err)
-          this.errorSnackbarMessage = defaultErrorMessage
+          this.errorSnackbarMessage = defaultErrorSnackbarMessage
         }
 
         // Reset timeout of the snackbar, preventing it from disappearing to soon on consecutive errors
