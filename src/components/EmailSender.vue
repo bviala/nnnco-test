@@ -72,8 +72,8 @@
       </v-row>
       <v-row>
         <v-textarea
-          v-model="message"
-          label="Message*"
+          v-model="text"
+          label="Message"
           auto-grow/>
       </v-row>
       <v-row>
@@ -127,7 +127,7 @@ export default {
       carbonCopyRecipients: [],
       blindCarbonCopyRecipients: [],
       subject: '',
-      message: ''
+      text: ''
     }
   },
 
@@ -168,7 +168,7 @@ export default {
       this.recipientsErrorMessage === '' &&
       this.carbonCopyRecipientsErrorMessage === '' &&
       this.blindCarbonCopyRecipientsErrorMessage === '' &&
-      this.message.length > 0
+      (this.subject.length > 0 || this.text.length > 0)
     }
   },
 
@@ -195,13 +195,15 @@ export default {
       const emailObject = {
         toList: this.recipients,
         ccList: this.carbonCopyRecipients,
-        bccList: this.blindCarbonCopyRecipients,
-        text: this.message
+        bccList: this.blindCarbonCopyRecipients
       }
 
-      // API allows email without subject only if the parameter is not sent
+      // API won't accept an empty string, the field should not be set if they're not used
       if (this.subject) {
         emailObject.subject = this.subject
+      }
+      if (this.text) {
+        emailObject.text = this.text
       }
 
       try {
@@ -224,7 +226,7 @@ export default {
       this.carbonCopyRecipients = []
       this.blindCarbonCopyRecipients = []
       this.subject = ''
-      this.message = ''
+      this.text = ''
     },
 
     isRecipientListValid (list) {
