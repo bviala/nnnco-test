@@ -98,6 +98,7 @@
 
     <v-snackbar
       v-model="errorSnackbar"
+      :timeout="errorTimeout"
       color="error"
       bottom>
       An error occurred, please try again.
@@ -121,6 +122,7 @@ export default {
       successSnackbar: false,
       errorSnackbar: false,
       isSending: false,
+      errorTimeout: 2000,
 
       // Data
       recipients: [],
@@ -217,7 +219,7 @@ export default {
         // Prevents user from spamming requests and triggering server overquota errors
         setTimeout(() => {
           this.isSending = false
-        }, 2000)
+        }, this.errorTimeout)
       }
     },
 
