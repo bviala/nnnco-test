@@ -1,17 +1,16 @@
 <template>
   <v-container class="px-5 container">
     <v-row>
-        <h1 class="primary--text font-weight-light">
-          bviala email sender
-        </h1>
+      <h1 class="primary--text font-weight-light">
+        bviala email sender
+      </h1>
     </v-row>
-    <form
-      @submit.prevent="send">
+    <form @submit.prevent="send">
       <v-row>
         <v-combobox
           ref="recipients"
           v-model="recipients"
-          :error-messages='recipientsErrorMessage'
+          :error-messages="recipientsErrorMessage"
           label="To*"
           chips
           deletable-chips
@@ -25,7 +24,8 @@
               rounded
               depressed
               color="primary"
-              @click.stop="enableCarbonCopy">
+              @click.stop="enableCarbonCopy"
+            >
               CC
             </v-btn>
             <v-btn
@@ -34,14 +34,14 @@
               rounded
               depressed
               color="primary"
-              @click.stop="enableBlindCarbonCopy">
+              @click.stop="enableBlindCarbonCopy"
+            >
               BCC
             </v-btn>
           </template>
         </v-combobox>
       </v-row>
-      <v-row
-        v-if="carbonCopy">
+      <v-row v-if="carbonCopy">
         <v-combobox
           ref="carbonCopy"
           v-model="carbonCopyRecipients"
@@ -53,7 +53,8 @@
         />
       </v-row>
       <v-row
-        v-if="blindCarbonCopy">
+        v-if="blindCarbonCopy"
+      >
         <v-combobox
           ref="blindCarbonCopy"
           v-model="blindCarbonCopyRecipients"
@@ -74,7 +75,8 @@
         <v-textarea
           v-model="text"
           label="Message"
-          auto-grow/>
+          auto-grow
+        />
       </v-row>
       <v-row>
         <v-btn
@@ -83,7 +85,8 @@
           :loading="isSending"
           block
           color="primary"
-          depressed>
+          depressed
+        >
           Send
         </v-btn>
       </v-row>
@@ -92,7 +95,8 @@
     <v-snackbar
       v-model="successSnackbar"
       color="success"
-      bottom>
+      bottom
+    >
       E-mail successfully sent !
     </v-snackbar>
 
@@ -100,10 +104,10 @@
       v-model="errorSnackbar"
       :timeout="errorTimeout"
       color="error"
-      bottom>
+      bottom
+    >
       An error occurred, please try again.
     </v-snackbar>
-
   </v-container>
 </template>
 
