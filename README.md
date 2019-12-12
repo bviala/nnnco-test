@@ -40,14 +40,13 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ## Improvements list
 
+### Display name email validation
+The validation for addresses in the form `Name <name@domain.com>` is pretty lose. A lot of character are not allowed in the Name part by the API. The best solution would be to use the same regex used by the API.
+
 ### TLD validation
 The email validation currently does not check that the TLD is valid.  
 This can lead to an error, with no accurate feedback for the user.  
 A solution could be to fetch the list of TLD from the IANA, then dynamically build the email validation regex.
-A simpler solution could be to rely on the API error message to provide an accurate feedback to the user, but this less resilient, as the API can change, and it would only occur after an attempt to send.
 
 ### E-mail address autocomplete
 The Vuetify combobox component can normally act as an autocomplete and suggest known e-mail addresses, but this feature was not implemented since it is bugged at the moment (see https://github.com/vuetifyjs/vuetify/issues/8841)
-
-### No subject warning
-A warning modal could be opened when the user attempts to send an e-mail with an empty subject.
